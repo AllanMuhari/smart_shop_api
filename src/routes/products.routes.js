@@ -54,14 +54,11 @@ router.post("/", async (req, res) => {
         message: "Please provide all the details with correct data types",
       });
     }
-
-    // Insert into the database
     const result = await pool.query(
       "INSERT INTO products (productThumbnail, productTitle, productDescription, productCost, onOffer) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [productThumbnail, productTitle, productDescription, productCost, onOffer]
     );
 
-    // Send response
     res.status(201).json({ success: true, data: result.rows[0] });
   } catch (err) {
     console.error("Error:", err);
@@ -69,11 +66,30 @@ router.post("/", async (req, res) => {
   }
 });
 router.patch("/:id", (req, res) => {
-  res.send("Update a product");
+  try {
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
-router.delete("/:id", (req, res) => {
-  res.send("Delete a product");
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleteProduct = await pool.query(
+      "DELETE FROM products WHERE id = $1",
+      [id]
+    );
+    if (deleteProduct.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+    res
+      .status(200)
+      .json({ success: true, message: "Product deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 export default router;
