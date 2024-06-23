@@ -1,12 +1,26 @@
 import { Router } from "express";
+import pool from "../db.config.js";
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.send("Get products");
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM products");
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
-router.get("/:id", (req, res) => {
-  res.send("Get single product");
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("SELECT * FROM products WHERE id = $1", [
+      id,
+    ]);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 router.post("/", (req, res) => {

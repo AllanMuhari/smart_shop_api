@@ -1,8 +1,13 @@
 import pkg from "pg";
-import { config } from "dotenv";
+
 const { Pool } = pkg;
 
-config();
-const pool = new Pool({});
+const pool = new Pool({
+  user: "postgres",
+  host: "localhost",
+  database: "smart_shop",
+  password: "9828",
+  port: 5432,
+});
 
 export default pool;
